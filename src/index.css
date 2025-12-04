@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --p-surface-ground: #ffffff;
+    --p-surface-card: #ffffff;
+    --p-content-background-color: #ffffff;
+    --p-text-color: #000000;
+}
+
+th.p-datatable-column-sorted {
+    color: black;
+}
+
+.p-datatable-column-sorted .p-datatable-sort-icon {
+    color: black !important;
+}
+
+input {
+    width: 100%;
+}
+
+/* file: src/assets/main.css atau index.css */
+.p-toast {
+    z-index: 9999;
+    /* biar selalu di atas elemen lain */
+}
+
+.p-toast .p-toast-message {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(6px);
+}
+
+.p-toast .p-toast-message-success {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+}
+
+.p-toast .p-toast-message-error {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+}
