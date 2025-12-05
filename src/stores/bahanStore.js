@@ -11,6 +11,7 @@ export const useBahanStore = defineStore('bahanStore', {
 
     actions: {
         // ✅ Ambil semua bahan
+        // (Backend now handles the logic: if User is Branch, it returns branch-specific stock)
         async fetchBahan() {
             this.loading = true
             const authStore = useAuthStore()
@@ -30,6 +31,8 @@ export const useBahanStore = defineStore('bahanStore', {
         },
 
         // ✅ Tambah bahan baru
+        // Payload should include: nama_bahan, kategori_id, satuan_id, stok_minimal
+        // (Stok is automatically set to 0 by backend)
         async addBahan(payload) {
             this.loading = true
             const authStore = useAuthStore()
@@ -39,7 +42,7 @@ export const useBahanStore = defineStore('bahanStore', {
                         Authorization: `Bearer ${authStore.token}`,
                     },
                 })
-                await this.fetchBahan() // refresh setelah tambah
+                await this.fetchBahan() // refresh list to see new item
             } catch (err) {
                 this.error = err.response?.data?.message || err.message
                 console.error('addBahan error:', this.error)
@@ -50,16 +53,19 @@ export const useBahanStore = defineStore('bahanStore', {
         },
 
         // 🟠 Update bahan
-        async updateBahan(payload) {
+        // Changed to accept ID and Payload separately for safer URL construction
+        async updateBahan(id, payload) {
             this.loading = true
             const authStore = useAuthStore()
             try {
-                await axios.put(`https://restaurant-backend-one-theta.vercel.app/api/bahan/${payload.id}`, payload, {
+                // Backend will update: nama_bahan, kategori, satuan, stok_minimal
+                // Backend will IGNORE: stok (cannot be edited here)
+                await axios.put(`https://restaurant-backend-one-theta.vercel.app/api/bahan/${id}`, payload, {
                     headers: {
                         Authorization: `Bearer ${authStore.token}`,
                     },
                 })
-                await this.fetchBahan() // refresh data
+                await this.fetchBahan() // refresh list to see changes
             } catch (err) {
                 this.error = err.response?.data?.message || err.message
                 console.error('updateBahan error:', this.error)
@@ -79,7 +85,7 @@ export const useBahanStore = defineStore('bahanStore', {
                         Authorization: `Bearer ${authStore.token}`,
                     },
                 })
-                await this.fetchBahan() // refresh setelah delete
+                await this.fetchBahan() // refresh list after delete
             } catch (err) {
                 this.error = err.response?.data?.message || err.message
                 console.error('deleteBahan error:', this.error)

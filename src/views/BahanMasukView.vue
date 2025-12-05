@@ -3,7 +3,6 @@
     <Toast />
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold text-gray-800">Daftar Bahan Masuk (Disetujui)</h2>
-      <Button label="Tambah Order" icon="pi pi-plus" @click="showDialog = true" />
     </div>
 
     <DataTable
@@ -50,56 +49,6 @@
         </template>
       </Column>
     </DataTable>
-
-    <Dialog
-      v-model:visible="showDialog"
-      modal
-      header="Tambah Order Bahan"
-      class="w-[90vw] md:w-[40rem]"
-    >
-      <form @submit.prevent="handleSubmit" class="flex flex-col gap-4">
-        <div>
-          <label class="block font-medium mb-2 text-gray-700">Pilih Bahan</label>
-          <Dropdown
-            v-model="form.bahan_id"
-            :options="bahanStore.data"
-            optionLabel="nama_bahan"
-            optionValue="id"
-            placeholder="Pilih bahan baku"
-            class="w-full"
-            showClear
-            filter
-          />
-        </div>
-
-        <div>
-          <label class="block font-medium mb-2 text-gray-700">Jumlah</label>
-          <InputNumber
-            v-model="form.jumlah"
-            inputClass="w-full"
-            :min="1"
-            placeholder="Masukkan jumlah bahan"
-            mode="decimal"
-            showButtons
-          />
-        </div>
-
-        <div class="flex justify-end gap-2 pt-4">
-          <Button
-            label="Batal"
-            class="p-button-text text-gray-600"
-            @click="showDialog = false"
-            type="button"
-          />
-          <Button
-            label="Simpan"
-            class="p-button-success"
-            type="submit"
-            :loading="orderStore.loading"
-          />
-        </div>
-      </form>
-    </Dialog>
   </div>
 </template>
 
@@ -123,7 +72,6 @@ const bahanStore = useBahanStore()
 const authStore = useAuthStore()
 const role = computed(() => authStore.user?.role)
 
-const showDialog = ref(false)
 const form = ref({
   bahan_id: null,
   jumlah: null,
@@ -154,7 +102,6 @@ async function handleSubmit() {
       detail: 'Order berhasil dibuat',
       life: 3000,
     })
-    showDialog.value = false
     form.value = { bahan_id: null, jumlah: null, supplier_id: null }
   } catch (err) {
     console.error(err)

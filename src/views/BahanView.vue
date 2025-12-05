@@ -6,7 +6,7 @@
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold text-gray-800">Daftar Bahan Baku</h2>
 
-      <Button v-if="canManage" label="Tambah Bahan" icon="pi pi-plus" @click="openDialog('add')" />
+      <Button label="Tambah Bahan" icon="pi pi-plus" @click="openDialog('add')" />
     </div>
 
     <DataTable
@@ -30,7 +30,7 @@
         </template>
       </Column>
 
-      <Column v-if="canManage" header="Aksi" style="width: 150px; text-align: center">
+      <Column header="Aksi" style="width: 150px; text-align: center">
         <template #body="{ data }">
           <div class="flex justify-center gap-2">
             <Button
@@ -75,8 +75,8 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Stok</label>
-          <InputNumber v-model="form.stok" placeholder="Masukkan stok" class="w-full" min="0" />
+          <label class="block text-sm font-medium mb-1">Stok Minimal</label>
+          <InputNumber v-model="form.stok_minimal" placeholder="Masukkan stok minimal" class="w-full" min="0" />
         </div>
 
         <div>
@@ -146,7 +146,7 @@ const isEditing = ref(false)
 const selectedBahan = ref(null)
 const form = ref({
   nama_bahan: '',
-  stok: null,
+  stok_minial: null,
   kategori_id: null,
   satuan_id: null,
 })
@@ -173,7 +173,7 @@ const openDialog = (mode, data = null) => {
 const resetForm = () => {
   form.value = {
     nama_bahan: '',
-    stok: null,
+    stok_minimal: null,
     kategori_id: null,
     satuan_id: null,
   }
