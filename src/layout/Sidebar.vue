@@ -29,7 +29,6 @@ const menuItems = computed(() => {
   else {
     base.push(
       { path: '/dashboard', icon: '�', label: 'Dashboard' },
-      { path: '/order', icon: '📦', label: 'Order' },
       { path: '/kategori', icon: '🗂️', label: 'Kategori' },
       { path: '/satuan', icon: '⚖️', label: 'Satuan' },
       { path: '/user-management', icon: '👥', label: 'User Management' },

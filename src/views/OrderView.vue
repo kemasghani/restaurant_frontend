@@ -26,7 +26,7 @@
         <template #body="{ data }">
           <span class="font-medium">{{ data.jumlah }}</span>
         </template>
-      </Column> />
+      </Column>
       <Column field="status" header="Status" sortable>
         <template #body="{ data }">
           <span
