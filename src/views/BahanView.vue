@@ -3,10 +3,21 @@
     <Toast />
     <ConfirmDialog />
 
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
       <h2 class="text-2xl font-bold text-gray-800">Daftar Bahan Baku</h2>
 
-      <Button label="Tambah Bahan" icon="pi pi-plus" @click="openDialog('add')" />
+      <div class="flex gap-2 w-full md:w-auto">
+        <span class="p-input-icon-left w-full md:w-auto">
+          <i class="pi pi-search" />
+          <InputText 
+            v-model="filters['global'].value" 
+            placeholder="Cari Nama Bahan..." 
+            class="w-full md:w-64" 
+          />
+        </span>
+
+        <Button label="Tambah Bahan" icon="pi pi-plus" @click="openDialog('add')" />
+      </div>
     </div>
 
     <DataTable
@@ -17,9 +28,11 @@
       stripedRows
       showGridlines
       responsiveLayout="scroll"
+      v-model:filters="filters"
+      :globalFilterFields="['nama_bahan']"
     >
       <Column field="id" header="No" style="width: 80px" />
-      <Column field="nama_bahan" header="Nama Bahan" />
+      <Column field="nama_bahan" header="Nama Bahan" sortable />
       <Column field="kategori_bahan.nama_kategori" header="Kategori" />
       <Column field="satuan_bahan.nama_satuan" header="Satuan" />
       <Column field="stok" header="Stok" />
@@ -63,6 +76,26 @@
         </div>
 
         <div>
+          <label class="block text-sm font-medium mb-1">Stok {{ isEditing ? 'Saat Ini' : 'Awal' }}</label>
+          <InputNumber 
+            v-model="form.stok" 
+            placeholder="0" 
+            class="w-full" 
+            min="0" 
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Stok Minimal</label>
+          <InputNumber 
+            v-model="form.stok_minimal" 
+            placeholder="Masukkan stok minimal" 
+            class="w-full" 
+            min="0" 
+          />
+        </div>
+
+        <div>
           <label class="block text-sm font-medium mb-1">Kategori</label>
           <Dropdown
             v-model="form.kategori_id"
@@ -72,11 +105,6 @@
             placeholder="Pilih kategori"
             class="w-full"
           />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium mb-1">Stok Minimal</label>
-          <InputNumber v-model="form.stok_minimal" placeholder="Masukkan stok minimal" class="w-full" min="0" />
         </div>
 
         <div>
@@ -107,13 +135,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue' // Tambahkan computed
+import { ref, onMounted, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
 import { useBahanStore } from '@/stores/bahanStore'
 import { useSatuanStore } from '@/stores/satuanStore'
 import { useKategoriStore } from '@/stores/kategori'
-import { useAuthStore } from '@/stores/auth' // Import Auth Store
+import { useAuthStore } from '@/stores/auth'
 
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -125,28 +153,39 @@ import Dialog from 'primevue/dialog'
 import Toast from 'primevue/toast'
 import ConfirmDialog from 'primevue/confirmdialog'
 
+// === FIX MANUAL UNTUK IMPORT ERROR ===
+const FilterMatchMode = {
+  CONTAINS: 'contains'
+}
+// =====================================
+
 const toast = useToast()
 const confirm = useConfirm()
 
 const bahanStore = useBahanStore()
 const satuanStore = useSatuanStore()
 const kategoriStore = useKategoriStore()
-const authStore = useAuthStore() // Inisialisasi Auth Store
+const authStore = useAuthStore()
 
-// === LOGIKA ROLE ===
-// Menghasilkan true jika role BUKAN 'cabang' dan BUKAN 'supplier'
+// State untuk Filter / Search
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+})
+
 const canManage = computed(() => {
   const role = authStore.user?.role
   return role !== 'cabang' && role !== 'supplier'
 })
-// ===================
 
 const showDialog = ref(false)
 const isEditing = ref(false)
 const selectedBahan = ref(null)
+
+// State Form (Termasuk Stok)
 const form = ref({
   nama_bahan: '',
-  stok_minial: null,
+  stok: 0,            // Default 0
+  stok_minimal: null, 
   kategori_id: null,
   satuan_id: null,
 })
@@ -157,29 +196,27 @@ onMounted(async () => {
   await kategoriStore.fetchKategori()
 })
 
-// Fungsi buka dialog (add/edit)
 const openDialog = (mode, data = null) => {
   isEditing.value = mode === 'edit'
   showDialog.value = true
   if (isEditing.value && data) {
     selectedBahan.value = data
-    form.value = { ...data }
+    form.value = { ...data } // Copy data ke form
   } else {
     resetForm()
   }
 }
 
-// Reset form
 const resetForm = () => {
   form.value = {
     nama_bahan: '',
+    stok: 0,           // Reset stok ke 0
     stok_minimal: null,
     kategori_id: null,
     satuan_id: null,
   }
 }
 
-// Simpan perubahan / tambah baru
 const handleSave = async () => {
   try {
     if (isEditing.value) {
@@ -203,6 +240,7 @@ const handleSave = async () => {
     await bahanStore.fetchBahan()
     resetForm()
   } catch (error) {
+    console.error(error)
     toast.add({
       severity: 'error',
       summary: 'Gagal',
@@ -212,7 +250,6 @@ const handleSave = async () => {
   }
 }
 
-// Konfirmasi hapus
 const confirmDelete = (data) => {
   confirm.require({
     message: `Apakah Anda yakin ingin menghapus bahan "${data.nama_bahan}"?`,
@@ -259,5 +296,9 @@ function formatDate(dateStr) {
 <style scoped>
 .p-button {
   font-weight: 500;
+}
+/* Memastikan icon search berada di posisi yang benar */
+.p-input-icon-left i {
+  z-index: 1;
 }
 </style>

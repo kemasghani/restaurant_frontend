@@ -11,7 +11,6 @@ export const useBahanStore = defineStore('bahanStore', {
 
     actions: {
         // ✅ Ambil semua bahan
-        // (Backend now handles the logic: if User is Branch, it returns branch-specific stock)
         async fetchBahan() {
             this.loading = true
             const authStore = useAuthStore()
@@ -31,8 +30,6 @@ export const useBahanStore = defineStore('bahanStore', {
         },
 
         // ✅ Tambah bahan baru
-        // Payload should include: nama_bahan, kategori_id, satuan_id, stok_minimal
-        // (Stok is automatically set to 0 by backend)
         async addBahan(payload) {
             this.loading = true
             const authStore = useAuthStore()

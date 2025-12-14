@@ -13,10 +13,11 @@ const role = computed(() => authStore.user?.role || 'guest')
 
 // Menu dinamis berdasarkan role
 const menuItems = computed(() => {
-  const base = [{ path: '/', icon: '🧪', label: 'Bahan Baku' }]
+  const base = []
 
   if (role.value === 'cabang') {
     base.push(
+      { path: '/', icon: '🧪', label: 'Bahan Baku' },
       { path: '/bahan-masuk', icon: '📦', label: 'Bahan Masuk' },
       { path: '/order', icon: '📦', label: 'Order' },
       { path: '/bahan-keluar', icon: '📤', label: 'Bahan Keluar' },
@@ -28,7 +29,7 @@ const menuItems = computed(() => {
   }
   else {
     base.push(
-      { path: '/dashboard', icon: '�', label: 'Dashboard' },
+      { path: '/dashboard', icon: '📊', label: 'Dashboard' },
       { path: '/kategori', icon: '🗂️', label: 'Kategori' },
       { path: '/satuan', icon: '⚖️', label: 'Satuan' },
       { path: '/user-management', icon: '👥', label: 'User Management' },
