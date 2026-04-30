@@ -30,11 +30,12 @@ export const useKategoriStore = defineStore('kategoriStore', {
             }
         },
 
-        async addKategori() {
+        async addKategori(payload) {
             const auth = useAuthStore()
             this.loading = true
             try {
-                await axios.post('https://restaurant-backend-one-theta.vercel.app/api/kategori', this.form, {
+                const body = payload || this.form
+                await axios.post('https://restaurant-backend-one-theta.vercel.app/api/kategori', body, {
                     headers: { Authorization: `Bearer ${auth.token}` }
                 })
                 await this.fetchKategori()

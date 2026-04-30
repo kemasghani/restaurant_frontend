@@ -30,10 +30,11 @@ export const useSatuanStore = defineStore('satuan', {
             }
         },
 
-        async addSatuan() {
+        async addSatuan(payload) {
             const auth = useAuthStore()
             try {
-                await axios.post('https://restaurant-backend-one-theta.vercel.app/api/satuan', this.form, {
+                const body = payload || this.form
+                await axios.post('https://restaurant-backend-one-theta.vercel.app/api/satuan', body, {
                     headers: { Authorization: `Bearer ${auth.token}` }
                 })
                 await this.fetchSatuan()
@@ -41,7 +42,8 @@ export const useSatuanStore = defineStore('satuan', {
                 return { success: true }
             } catch (err) {
                 const msg = err.response?.data?.message || 'Gagal menambah satuan'
-                return { success: false, message: msg }
+                this.error = msg
+                throw err
             }
         },
 

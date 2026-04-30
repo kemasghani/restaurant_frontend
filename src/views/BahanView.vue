@@ -118,6 +118,17 @@
             class="w-full"
           />
         </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Tanggal Kadaluarsa</label>
+          <Calendar
+            v-model="form.tanggal_kadaluarsa"
+            dateFormat="yy-mm-dd"
+            placeholder="Pilih tanggal"
+            class="w-full"
+            showIcon
+          />
+        </div>
       </div>
 
       <template #footer>
@@ -152,6 +163,7 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import Toast from 'primevue/toast'
 import ConfirmDialog from 'primevue/confirmdialog'
+import Calendar from 'primevue/calendar'
 
 // === FIX MANUAL UNTUK IMPORT ERROR ===
 const FilterMatchMode = {
@@ -185,9 +197,10 @@ const selectedBahan = ref(null)
 const form = ref({
   nama_bahan: '',
   stok: 0,            // Default 0
-  stok_minimal: null, 
+  stok_minimal: null,
   kategori_id: null,
   satuan_id: null,
+  tanggal_kadaluarsa: null,
 })
 
 onMounted(async () => {
@@ -201,7 +214,10 @@ const openDialog = (mode, data = null) => {
   showDialog.value = true
   if (isEditing.value && data) {
     selectedBahan.value = data
-    form.value = { ...data } // Copy data ke form
+    form.value = {
+      ...data,
+      tanggal_kadaluarsa: data.tanggal_kadaluarsa ? new Date(data.tanggal_kadaluarsa) : null,
+    }
   } else {
     resetForm()
   }
@@ -214,6 +230,7 @@ const resetForm = () => {
     stok_minimal: null,
     kategori_id: null,
     satuan_id: null,
+    tanggal_kadaluarsa: null,
   }
 }
 

@@ -5,7 +5,12 @@
 
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold text-gray-800">Daftar Order Bahan</h2>
-      <Button label="Tambah Order" icon="pi pi-plus" @click="showDialog = true" />
+      <Button
+        v-if="role !== 'supplier'"
+        label="Tambah Order"
+        icon="pi pi-plus"
+        @click="showDialog = true"
+      />
     </div>
 
     <DataTable

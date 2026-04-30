@@ -107,8 +107,14 @@ const handleLogin = async () => {
     })
 
     if (success) {
-      // Redirect to dashboard or home page after successful login
-      router.push('/')
+      const role = authStore.user?.role
+      if (role === 'supplier') {
+        router.push('/order')
+      } else if (role === 'cabang') {
+        router.push('/')
+      } else {
+        router.push('/dashboard')
+      }
     } else {
       errorMessage.value = 'Invalid email or password. Please try again.'
     }
